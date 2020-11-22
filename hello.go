@@ -37,27 +37,35 @@ func (this MyInt) Hash() uint32 {
 	return uint32(this)
 }
 
-func HashList(arr []IHashable) {
+func HashStuff(arr []IHashable) {
 	for _, v := range arr {
 		fmt.Printf("Value: %v / Hash: %d\n", v, v.Hash())
 	}
 }
 
-// ----  HashMap  ----------------------------------------------------
+// ----  HashSet  ----------------------------------------------------
 
-type HashMap struct {
+type HashSet struct {
 	content map[uint32]IHashable
 }
 
-func NewHashMap() *HashMap {
-	hashMap := new(HashMap)
-	hashMap.content = make(map[uint32]IHashable)
-	return hashMap
+func NewHashSet() *HashSet {
+	HashSet := new(HashSet)
+	HashSet.content = make(map[uint32]IHashable)
+	return HashSet
 }
 
-func (this HashMap) Add(x IHashable) {
-	hash := x.Hash()
-	this.content[hash] = x
+func (this HashSet) Add(x IHashable) {
+	this.content[x.Hash()] = x
+}
+
+func (this HashSet) Remove(x IHashable) {
+	delete(this.content, x.Hash())
+}
+
+func (this HashSet) Contains(x IHashable) bool {
+	_, ok := this.content[x.Hash()]
+	return ok
 }
 
 // --------------------------------------------------------------
@@ -67,12 +75,20 @@ const foooo = "aaa"
 
 func main() {
 	mixedBag := []IHashable{MyInt(42), MyString("foobar")}
-	HashList(mixedBag)
+	HashStuff(mixedBag)
 
-	hashMap := NewHashMap() //new(HashMap)
-	hashMap.Add(MyInt(42))
-	hashMap.Add(MyString("hi"))
-	fmt.Printf("Hashmap contents: %v\n", hashMap.content)
+	hashSet := NewHashSet() //new(HashSet)
+	hashSet.Add(MyInt(42))
+	hashSet.Add(MyString("hi"))
+	fmt.Printf("hashSet contains 42: %v\n", hashSet.Contains(MyInt(42)))
+	fmt.Printf("hashSet contains 43: %v\n", hashSet.Contains(MyInt(43)))
+	fmt.Printf("hashSet contains 'hi': %v\n", hashSet.Contains(MyString("hi")))
+	fmt.Printf("hashSet contains 'hiu': %v\n", hashSet.Contains(MyString("hiu")))
+	hashSet.Remove(MyInt(42))
+	hashSet.Remove(MyInt(42))
+	hashSet.Remove(MyInt(43))
+	fmt.Printf("hashSet contains 42: %v\n", hashSet.Contains(MyInt(42)))
+	fmt.Printf("hashSet contains 43: %v\n", hashSet.Contains(MyInt(43)))
 
 	var i32 int32 = 42
 	doStuff(i32)
