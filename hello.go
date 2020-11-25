@@ -5,8 +5,37 @@ import (
 	"strconv"
 )
 
+func noArgsReturn0()                 {}
+func noArgsReturn1() int32           { return 42 }
+func noArgsReturn2() (int32, string) { return 42, "foo" }
+
+func argsReturn0(x int32)                 {}
+func argsReturn1(x int32) int32           { return x }
+func argsReturn2(x int32) (int32, string) { return x, string(x) }
+
+type myStruct struct {
+	x int32
+}
+
+func (s myStruct) methodNoArgsReturn0() {}
+func (s myStruct) methodArgsReturn2(x int32) (int32, string) {
+	return x, string(s.x)
+}
+
+func funcReturnFunc() func() int32 {
+	return func() int32 {
+		return 42
+	}
+}
+func funcReturnFunc2(x int32) func(y int32) int32 {
+	return func(y int32) int32 {
+		return x * y
+	}
+}
+
 // ----  IAny  ----------------------------------------------------
 
+// IAny can be anything.
 type IAny interface{}
 
 func doStuff(thing IAny) {
