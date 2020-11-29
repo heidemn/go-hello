@@ -1,0 +1,4 @@
+*.exe
+*.wasm
+
+/go-wasm/wasm_exec.js
