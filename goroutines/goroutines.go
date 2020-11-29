@@ -15,6 +15,23 @@ func goRoutine(msg string) {
 
 func main() {
 	// -----------------------------------
+	doStuffAsync := func() chan int {
+		resultChan := make(chan int)
+		go func() {
+			fmt.Printf("Async: sleep 1\n")
+			time.Sleep(1 * time.Second)
+			fmt.Printf("Async: result\n")
+			resultChan <- 42
+		}()
+		return resultChan
+	}
+
+	fmt.Printf("Calling async function...\n")
+	promise := doStuffAsync()
+	fmt.Printf("Called async function\n")
+	fmt.Printf("Awaited result: %d\n", <-promise)
+
+	// -----------------------------------
 	go goRoutine("async")
 	goRoutine("xx")
 	goRoutine("yy")
@@ -24,7 +41,7 @@ func main() {
 	// fatal error: all goroutines are asleep - deadlock!
 	// messages <- "msg"
 	go func() {
-		time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 		fmt.Printf("Sending message\n")
 		messages <- "msg1"
 		messages <- "msg2"
@@ -47,14 +64,12 @@ func main() {
 	// -----------------------------------
 	approxPi := func(results chan<- float64) {
 		// invalid operation: <-results (receive from send-only type chan<- float64)
-		// fmt.Printf("Got number: %f\n", <-results)
-		var total int64
-		var inCircle int64
+		// fmt.Printf("Not allowed to read from write-only channel: %f\n", <-results)
+		var total, inCircle int64
 		for {
 			x := rand.Float64()
 			y := rand.Float64()
-			radiusSqr := x*x + y*y
-			if radiusSqr < 1.0 {
+			if x*x+y*y < 1.0 {
 				inCircle++
 			}
 			total++
